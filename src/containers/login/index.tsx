@@ -1,6 +1,7 @@
 import {
   LockOutlined,
   MobileOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 import {
   LoginForm,
@@ -11,29 +12,72 @@ import {
 } from '@ant-design/pro-components';
 import { Tabs, message, theme } from 'antd';
 import { useState } from 'react';
-import classes from './index.module.less'
+import styles from './index.module.less'
+import { useMutation } from '@apollo/client/react';
+import { GET_CODE_MSG, LOGIN } from '../../graphql/auth';
 
 type LoginType = 'phone' | 'account';
+//获取验证码的传参类型和返回值类型
+interface IGetCodeMsgData {
+  getCodeMsg: {
+    code: number,
+    message: string
+  }
+}
+interface IGetCodeMsgVars {
+  tel: string
+}
+//登录信息类型
+interface ILoginVars {
+  tel: string,
+  code: string
+}
+interface ILoginData {
+  login: {
+    code: number,
+    message: string
+  }
+}
 
-const Demo = () => {
+const Login = () => {
   const { token } = theme.useToken();
   const [loginType, setLoginType] = useState<LoginType>('phone');
+  const [getCode] = useMutation<IGetCodeMsgData, IGetCodeMsgVars>(GET_CODE_MSG, {
+    onCompleted: (data) => {
+      console.log('data', data);
+      if (data.getCodeMsg.code === 200) {
+        message.success(data.getCodeMsg.message)
+      } else {
+        message.error(data.getCodeMsg.message)
+      }
+    },
+    onError: () => message.error('获取验证码失败')
+  });
+  const [loginRun] = useMutation<ILoginData, ILoginVars>(LOGIN, {
+    onCompleted: (data) => {
+      if (data.login.code === 200) {
+        message.success(data.login.message)
+      } else {
+        message.error(data.login.message)
+      }
+    }
+  })
+  const loginHandler = async (entity: ILoginVars) => {
+    await loginRun({
+      variables: {
+        tel: entity.tel,
+        code: entity.code
+      }
+    })
+  }
 
-  // const iconStyles: CSSProperties = {
-  //   marginInlineStart: '16px',
-  //   color: setAlpha(token.colorTextBase, 0.2),
-  //   fontSize: '24px',
-  //   verticalAlign: 'middle',
-  //   cursor: 'pointer',
-  // };
 
   return (
     <ProConfigProvider hashed={false}>
-      <div style={{ backgroundColor: token.colorBgContainer }}>
+      <div style={{ backgroundColor: token.colorBgContainer }} className={styles.container}>
         <LoginForm
+          onFinish={loginHandler}
           logo="http://water-drop-assets.oss-cn-hangzhou.aliyuncs.com/images/henglogo.png"
-        // title="Github"
-        // subTitle=""
         >
           <Tabs
             centered
@@ -43,6 +87,24 @@ const Demo = () => {
               { key: 'phone', label: '手机号登录' },
             ]}
           />
+          {loginType === 'account' && (
+            <>
+              <ProFormText
+                name="username"
+                fieldProps={{
+                  size: 'large',
+                  prefix: <UserOutlined className={'prefixIcon'} />,
+                }}
+                placeholder={'用户名: admin or user'}
+                rules={[
+                  {
+                    required: true,
+                    message: '请输入用户名!',
+                  },
+                ]}
+              />
+            </>
+          )}
           {loginType === 'phone' && (
             <>
               <ProFormText
@@ -50,7 +112,7 @@ const Demo = () => {
                   size: 'large',
                   prefix: <MobileOutlined className={'prefixIcon'} />,
                 }}
-                name="mobile"
+                name="tel"
                 placeholder={'手机号'}
                 rules={[
                   {
@@ -64,6 +126,7 @@ const Demo = () => {
                 ]}
               />
               <ProFormCaptcha
+                phoneName='tel'
                 fieldProps={{
                   size: 'large',
                   prefix: <LockOutlined className={'prefixIcon'} />,
@@ -78,15 +141,19 @@ const Demo = () => {
                   }
                   return '获取验证码';
                 }}
-                name="captcha"
+                name="code"
                 rules={[
                   {
                     required: true,
                     message: '请输入验证码！',
                   },
                 ]}
-                onGetCaptcha={async () => {
-                  message.success('获取验证码成功！');
+                onGetCaptcha={async (tel) => {
+                  await getCode({
+                    variables: {
+                      tel
+                    }
+                  })
                 }}
               />
             </>
@@ -99,13 +166,7 @@ const Demo = () => {
             <ProFormCheckbox noStyle name="autoLogin">
               自动登录
             </ProFormCheckbox>
-            <a
-              style={{
-                float: 'right',
-              }}
-            >
-              忘记密码
-            </a>
+
           </div>
         </LoginForm>
       </div>
@@ -114,7 +175,7 @@ const Demo = () => {
 };
 
 export default () => (
-  <div style={{ padding: 24 }}>
-    <Demo />
+  <div style={{ padding: 24 }} className='container'>
+    <Login />
   </div>
 );
