@@ -1,17 +1,14 @@
-import Login from "../containers/Login"
-import Home from "../containers/Home"
+import Home from "../containers/Home";
+import My from "../containers/My";
+import Org from "../containers/Org";
+import Page404 from "../containers/Page404";
+import { ROUTE_KEY } from "./menus";
 
-export const ROUTE_CONFIG = [
-  {
-    path: '/login',
-    key: 'login',
-    element: Login,
-    title: '登录'
-  },
-  {
-    path: '/',
-    key: 'home',
-    element: Home,
-    title: '登录'
-  },
-]
+
+
+export const ROUTE_COMPONENT = {
+  [ROUTE_KEY.HOME]: Home,
+  [ROUTE_KEY.MY]: My,
+  [ROUTE_KEY.ORG]: Org,
+  [ROUTE_KEY.PAGE_404]: Page404,
+};

@@ -13,57 +13,77 @@ import {
 import { Tabs, message, theme } from 'antd';
 import { useState } from 'react';
 import styles from './index.module.less'
+import { useMutation } from '@apollo/client/react';
+import { GET_CODE_MSG, LOGIN } from '../../graphql/auth';
 import { AUTH_TOKEN } from '../../utils/constants';
 
-import { useLoginMutation, useGetCodeMsgMutation } from '../../graphql/generated';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useTitle } from '../../hooks';
 type LoginType = 'phone' | 'account';
-
+//获取验证码的传参类型和返回值类型
+interface IGetCodeMsgData {
+  getCodeMsg: {
+    code: number,
+    message: string,
+  }
+}
+interface IGetCodeMsgVars {
+  tel: string
+}
+//登录信息类型
 interface ILoginVars {
   tel: string,
   code: string,
   autoLogin?: boolean
 }
-
+interface ILoginData {
+  login: {
+    code: number,
+    message: string,
+    data?: string
+  }
+}
 
 const Login = () => {
-  useTitle('登录')
   const { token } = theme.useToken();
   const [loginType, setLoginType] = useState<LoginType>('phone');
-  const nav = useNavigate()
-  const [params] = useSearchParams()
-  const [getCode] = useGetCodeMsgMutation({
-    // onCompleted: (data:GetCodeMsgMutation) => {
-    //   console.log('data', data);
-    //   if (data.getCodeMsg.code === 200) {
-    //     message.success(data.getCodeMsg.message)
-    //   } else {
-    //     message.error(data.getCodeMsg.message)
-    //   }
-    // },
-    // onError: () => message.error('获取验证码失败')
-  });
-  const codeHandler = async (tel: string) => {
-    try {
-      const { data } = await getCode({
-        variables: {
-          tel
-        }
-      })
-      if (data?.getCodeMsg.code === 200) {
+  const [getCode] = useMutation<IGetCodeMsgData, IGetCodeMsgVars>(GET_CODE_MSG, {
+    onCompleted: (data) => {
+      console.log('data', data);
+      if (data.getCodeMsg.code === 200) {
         message.success(data.getCodeMsg.message)
       } else {
-        message.error(data?.getCodeMsg.message)
+        message.error(data.getCodeMsg.message)
       }
-    } catch (e) {
-      message.error((e as Error).message)
-    }
+    },
+    onError: () => message.error('获取验证码失败')
+  });
+  const [loginRun] = useMutation<ILoginData, ILoginVars>(LOGIN, {
+    // onCompleted: (data) => {
+    // if (data.login.code === 200) {
+    //   message.success(data.login.message)
+    //   //不加判断，他就不让赋值
+    //   console.log(autoLogRef.current);
 
-  }
-  //   if (!data.getCodeMsg)
+    //   if (data.login.data && autoLogRef.current) {
+    //     localStorage.setItem(AUTH_TOKEN, data.login.data)
+    //   }
+    // } else {
+    //   message.error(data.login.message)
+    // }
+    // }
+  })
+
+  // const getCodeHandler = (tel: string) => {
+  //   getCode({
+  //     variables: {
+  //       tel
+  //     }
+  //   })
+  //      if (data.getCodeMsg.code === 200) {
+  //       message.success(data.getCodeMsg.message)
+  //     } else {
+  //       message.error(data.getCodeMsg.message)
+  //     }
   // }
-  const [loginRun] = useLoginMutation()
   const loginHandler = async (entity: ILoginVars) => {
     try {
       const res = await loginRun({
@@ -84,10 +104,9 @@ const Login = () => {
             sessionStorage.setItem(AUTH_TOKEN, '')
             localStorage.setItem(AUTH_TOKEN, res.data.login.data)
           } else {
-            localStorage.setItem(AUTH_TOKEN, '')
             sessionStorage.setItem(AUTH_TOKEN, res.data.login.data)
           }
-          nav(params.get('orgUrl') || '')
+
         }
       } else {
         message.error(res.data.login.message)
@@ -98,14 +117,11 @@ const Login = () => {
   }
 
 
-
   return (
-    <ProConfigProvider hashed={false}
-    >
-      <div style={{ backgroundColor: token.colorBgContainer, height: '100vh' }} className={styles.container} >
+    <ProConfigProvider hashed={false}>
+      <div style={{ backgroundColor: token.colorBgContainer }} className={styles.container}>
         <LoginForm
           onFinish={loginHandler}
-
           logo="http://water-drop-assets.oss-cn-hangzhou.aliyuncs.com/images/henglogo.png"
         >
           <Tabs
@@ -144,7 +160,6 @@ const Login = () => {
                 name="tel"
                 placeholder={'手机号'}
                 initialValue={'17552755523'}
-
                 rules={[
                   {
                     required: true,
@@ -180,14 +195,13 @@ const Login = () => {
                   },
                 ]}
                 onGetCaptcha={
-                  async (tel) => { codeHandler(tel) }
-                  //   async (tel) => {
-                  //   await getCode({
-                  //     variables: {
-                  //       tel
-                  //     }
-                  //   })
-                  // }
+                  async (tel) => {
+                    await getCode({
+                      variables: {
+                        tel
+                      }
+                    })
+                  }
                 }
               />
             </>
@@ -197,7 +211,9 @@ const Login = () => {
               marginBlockEnd: 24,
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
+            <ProFormCheckbox
+              noStyle name="autoLogin"
+            >
               自动登录
             </ProFormCheckbox>
 

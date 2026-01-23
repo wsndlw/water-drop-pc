@@ -1,0 +1,76 @@
+import { gql } from '@apollo/client';
+
+export const GET_ORGS = gql`
+  query getOrganizations($params: PageInput!) {
+    getOrganizations(params: $params){
+      code
+      message
+      page {
+        total
+        pageNum
+        pageSize
+      }
+      data {
+        id
+        logo
+        name
+        address
+        tags
+      }
+    }
+  }
+`;
+
+export const GET_ORG = gql`
+query getOrganizationInfo(
+  $id: String!
+  ) {
+    getOrganizationInfo(id: $id) {
+      data {
+        description
+        name
+        tags
+        id
+        orgFrontImg {
+          url
+        }
+        orgRoomImg {
+          url
+        }
+        orgOtherImg {
+          url
+        }
+        logo
+        address
+        tel
+        longitude
+        latitude
+        identityCardBackImg
+        identityCardFrontImg
+        businessLicense
+      }
+      code
+      message
+  }
+}
+`;
+
+
+export const COMMIT_ORG = gql`
+  mutation commitOrganizationInfo($params: OrganizationInput!, $id: String) {
+    commitOrganizationInfo(params: $params, id: $id) {
+      code
+      message
+    }
+  }
+`;
+
+export const DEL_ORG = gql`
+  mutation deleteOrg($id: String!) {
+    deleteOrg(id: $id) {
+      code
+      message
+    }
+  }
+`;
+
