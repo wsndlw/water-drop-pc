@@ -10,5 +10,5 @@ generates:
       - typescript-react-apollo
     config:
       withHooks: true
-      avoidOptionals: true
+      avoidOptionals: false
       apolloReactHooksImportFrom: "@apollo/client/react" 

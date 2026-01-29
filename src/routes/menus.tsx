@@ -1,6 +1,6 @@
 import Home from "../containers/Home"
 import Page404 from "../containers/Page404"
-import { HomeOutlined, ShopOutlined } from "@ant-design/icons"
+import { GiftOutlined, HomeOutlined, ShopOutlined, TeamOutlined } from "@ant-design/icons"
 
 interface IRoute {
   path: string;
@@ -12,6 +12,9 @@ export const ROUTE_KEY = {
   HOME: 'home',
   MY: 'my',
   ORG: 'org',
+  COURSE: 'course',
+  PRODUCT: 'peoduct',
+  NOORG: 'noorg',
   PAGE_404: 'p404',
 };
 
@@ -28,9 +31,26 @@ export const ROUTE_CONFIG: Record<string, IRoute> = {
     hideInMenu: true,
     icon: <HomeOutlined />,
   },
+  [ROUTE_KEY.NOORG]: {
+    path: 'noorg',
+    name: '缺省页',
+    hideInMenu: true,
+    icon: <HomeOutlined />,
+  },
+  [ROUTE_KEY.COURSE]: {
+    path: 'course',
+    name: '课程管理',
+    icon: <TeamOutlined />,
+  },
+  [ROUTE_KEY.PRODUCT]: {
+    path: 'product',
+    name: '商品管理',
+    icon: <GiftOutlined />,
+  },
   [ROUTE_KEY.ORG]: {
     path: 'org',
     name: '门店管理',
+    hideInMenu: true,
     icon: <ShopOutlined />,
   },
   [ROUTE_KEY.PAGE_404]:

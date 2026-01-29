@@ -1,8 +1,8 @@
 import { gql } from '@apollo/client';
 
 export const GET_ORGS = gql`
-  query getOrganizations($params: PageInput!) {
-    getOrganizations(params: $params){
+  query getOrganizations($page: PageInput!) {
+    getOrganizations(page: $page){
       code
       message
       page {
@@ -16,6 +16,19 @@ export const GET_ORGS = gql`
         name
         address
         tags
+      }
+    }
+  }
+`;
+
+export const GET_SAMPLE_ORGS = gql`
+  query getSampleOrganizations($page: PageInput!,$name:String) {
+    getOrganizations(page: $page,name:$name){
+      code
+      message
+      data {
+        id
+        name
       }
     }
   }

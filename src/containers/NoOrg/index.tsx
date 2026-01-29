@@ -1,0 +1,30 @@
+import { Button, Result } from 'antd';
+import { useEffect } from 'react';
+import { useGoTo } from '../../hooks';
+import { useUserContext } from '../../hooks/userHooks';
+
+/**
+* 请选择门店
+*/
+const NoOrg = () => {
+  const { store } = useUserContext();
+  const { go } = useGoTo();
+  useEffect(() => {
+    console.log('store.currentOrg', store.currentOrg);
+    if (store.currentOrg) {
+      go();
+      console.log('321', 321);
+    }
+  }, [store.currentOrg]);
+
+  return (
+    <Result
+      status="404"
+      title="请选择门店"
+      subTitle="所有的管理行为都是基于您选择的门店进行筛选的"
+      extra={<Button type="primary" href="/">返回首页</Button>}
+    />
+  );
+};
+
+export default NoOrg;

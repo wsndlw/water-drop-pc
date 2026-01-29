@@ -1,11 +1,8 @@
 import { Drawer, Button, Form, Row, Col, Input, Select, Divider, Spin, type UploadFile } from 'antd';
-import style from 'antd/es/affix/style';
-import form from 'antd/es/form';
 import { useEditOrg, useOrganization } from '../../../../services/org';
 import OSSImageUpload from '../../../../components/OSSImageUpload';
 import { useMemo } from 'react';
 import { useForm } from 'antd/es/form/Form';
-import type { IOrganization } from '../../../../utils/types';
 import type { OrganizationInput } from '../../../../graphql/generated';
 
 interface IProps {
@@ -49,8 +46,6 @@ const EditOrg = ({ id, onClose }: IProps) => {
   if (queryLoading) {
     return <Spin />;
   }
-
-
 
   return (
     <Drawer

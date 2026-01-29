@@ -2,11 +2,12 @@ import { ProLayout, PageContainer, type MenuDataItem } from '@ant-design/pro-com
 import style from './index.module.less';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useUserContext } from '../../hooks/userHooks';
-import { Space } from 'antd';
-import { LogoutOutlined } from '@ant-design/icons';
+import { Space, Tooltip } from 'antd';
+import { LogoutOutlined, ShopOutlined } from '@ant-design/icons';
 import { ROUTE_CONFIG, ROUTE_KEY, routes } from '../../routes/menus';
 import { AUTH_TOKEN } from '../../utils/constants';
-import { useGoTo } from '../../hooks';
+import { useGoTo, useIsOrgRoute } from '../../hooks';
+import OrgSelect from '../../components/OrgSelect';
 
 
 /**
@@ -27,6 +28,10 @@ const Layout = () => {
     sessionStorage.removeItem(AUTH_TOKEN)
     nav('/login')
   }
+  const goToOrg = () => {
+    go(ROUTE_KEY.ORG)
+  }
+  const isOrg = useIsOrgRoute()
   return (
     <ProLayout
       layout="mix"
@@ -51,8 +56,16 @@ const Layout = () => {
       }}
       onMenuHeaderClick={() => nav('/')}
       menuItemRender={menuItemRender}
+      actionsRender={() => [
+        !isOrg && <OrgSelect />,
+        <Tooltip title='门店管理'>
+          <ShopOutlined onClick={goToOrg} />
+        </Tooltip>,
+      ]}
     >
+      <div key = {store.currentOrg}>
       <Outlet />
+      </div>
     </ProLayout>
   );
 };

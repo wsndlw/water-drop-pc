@@ -1,7 +1,5 @@
 import { Button } from 'antd';
-import { connect, useUserContext } from '../../hooks/userHooks';
-import style from './index.module.less';
-import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../../hooks/userHooks';
 import { useGoTo } from '../../hooks';
 import { ROUTE_KEY } from '../../routes/menus';
 
@@ -13,7 +11,7 @@ const Home = ({ }) => {
   const { go } = useGoTo()
 
   return (<>
-    <div className={style.container}>{store.tel}</div>
+    <div >{store.tel}</div>
     <Button onClick={() => go(ROUTE_KEY.MY)}>去个人信息</Button>
   </>
   );

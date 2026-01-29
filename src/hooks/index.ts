@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { getRouteByKey, routes } from "../routes/menus";
+import { getRouteByKey, ROUTE_CONFIG, ROUTE_KEY, routes } from "../routes/menus";
 import { matchPath, useLocation, useNavigate } from "react-router-dom";
 
 export const useTitle = (title: string) => {
@@ -46,4 +46,13 @@ export const useMatchedRoute = () => {
     (item) => matchPath(`/${item.path}`, r.pathname),
   ), [r.pathname]);
   return route;
+};
+
+export const useIsOrgRoute = () => {
+  const curRoute = useMatchedRoute();
+  if(curRoute?.key === ROUTE_CONFIG[ROUTE_KEY.ORG].path){
+    return true
+  }else{
+    return false
+  }
 };

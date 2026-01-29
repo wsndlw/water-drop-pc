@@ -1,12 +1,13 @@
 import { message } from "antd"
-import { useCommitOrganizationInfoMutation, useDeleteOrgMutation, useGetOrganizationInfoQuery, useGetOrganizationsQuery, type OrganizationInput } from "../graphql/generated"
+import { useCommitOrganizationInfoMutation, useDeleteOrgMutation, useGetOrganizationInfoQuery, useGetOrganizationsQuery, useGetSampleOrganizationsQuery, type OrganizationInput } from "../graphql/generated"
 import { DEFAULT_PAGE_SIZE } from "../utils/constants"
 
 
 export const useOrganizations = (pageNum = 1, pageSize = DEFAULT_PAGE_SIZE) => {
+  // if (!sample) {
   const { data, refetch, loading } = useGetOrganizationsQuery({
     variables: {
-      params: {
+      page: {
         pageNum,
         pageSize,
       },
@@ -18,7 +19,41 @@ export const useOrganizations = (pageNum = 1, pageSize = DEFAULT_PAGE_SIZE) => {
     page: data?.getOrganizations.page,
     data: data?.getOrganizations.data,
   }
+  // } else {
+  //   const { data, refetch, loading } = useGetSampleOrganizationsQuery({
+  //     variables: {
+  //       params: {
+  //         pageNum,
+  //         pageSize,
+  //       },
+  //     },
+  //   })
+  //   return {
+  //     loading,
+  //     refetch,
+  //     data: data?.getOrganizations.data,
+  //   }
+  // }
+
 }
+
+export const useSimpleOrganizations = (pageNum = 1, pageSize = DEFAULT_PAGE_SIZE) => {
+
+  const { data, refetch, loading } = useGetSampleOrganizationsQuery({
+    variables: {
+      page: {
+        pageNum,
+        pageSize,
+      },
+    },
+  })
+  return {
+    loading,
+    refetch,
+    data: data?.getOrganizations.data,
+  }
+}
+
 
 export const useOrganization = (id: string) => {
   const { data, loading } = useGetOrganizationInfoQuery({
@@ -26,7 +61,7 @@ export const useOrganization = (id: string) => {
       id
     },
   })
-  console.log('data', data?.getOrganizationInfo);
+  // console.log('data', data?.getOrganizationInfo);
   return {
     loading,
     data: data?.getOrganizationInfo.data,
@@ -42,8 +77,11 @@ export const useEditOrg = () => {
         params
       }
     })
-    message.info(res.data?.commitOrganizationInfo.message);
-
+    if (res.data?.commitOrganizationInfo.code === 200) {
+      message.info(res.data?.commitOrganizationInfo.message);
+      return
+    }
+    message.error(res.data?.commitOrganizationInfo.message)
   }
 
   return { editHandler, loading }

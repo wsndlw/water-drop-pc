@@ -2,13 +2,14 @@ import { connectFactory, useAppContext } from "../utils/contextFactory"
 import { useGetUserInfoQuery } from "../graphql/generated"
 import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
+import type { IUser } from "../utils/types"
 
 const KEY = 'userInfo'
 const DEFAULT_VALUE = {
 
 }
 
-export const useUserContext = () => useAppContext(KEY)
+export const useUserContext = () => useAppContext<IUser>(KEY)
 
 export const connect = connectFactory(KEY, DEFAULT_VALUE)
 

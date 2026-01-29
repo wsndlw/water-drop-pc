@@ -49,11 +49,11 @@ const OSSImageUpload: React.FC<Readonly<AliyunOSSUploadProps>> = ({ value, onCha
   // };
 
   const OSSData = data?.getOssInfo;
+  console.log('OSSData', OSSData);
 
-  
   const getKey = (file: UploadFile) => {
     const suffix = file.name.slice(file.name.lastIndexOf('.'));
-    const key = `${OSSData?.dir}${file.name}${suffix}`;
+    const key = `${OSSData?.dir}${file.uid}${suffix}`;
     const url = `${OSSData?.host}/${key}`;
     return { key, url };
   };
@@ -65,14 +65,13 @@ const OSSImageUpload: React.FC<Readonly<AliyunOSSUploadProps>> = ({ value, onCha
       url: getKey(item).url
     }))
 
-    console.log('Aliyun OSS:', files);
+    // console.log('Aliyun OSS:', files);
     onChange?.(files);
   };
 
   const getExtraData: UploadProps['data'] = (file) => {
-    const {key} = getKey(file);
+    const { key } = getKey(file)
     return {
-      // key: `images/${file.name}`,
       key,
       policy: OSSData?.policy,
       'x-oss-signature': OSSData?.signature,

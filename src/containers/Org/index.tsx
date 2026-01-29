@@ -2,7 +2,6 @@ import { PageContainer, ProList } from '@ant-design/pro-components';
 import { useState } from 'react';
 import { Button, Popconfirm, Tag } from 'antd';
 
-import style from './index.module.less';
 import { useDelOrg, useOrganizations } from '../../services/org';
 import { DEFAULT_PAGE_SIZE } from '../../utils/constants';
 import EditOrg from './component/EditOrg';
@@ -20,8 +19,8 @@ const Org = () => {
     setShowEdit(true);
   };
 
-  const delInfoHandler = (id: string) => {
-    delHandler(id, refetch)
+  const delInfoHandler = (id:string) => {
+    delHandler(id,refetch)
   }
   const addInfoHandler = () => {
     setCurId('');
@@ -35,7 +34,7 @@ const Org = () => {
 
   const onPageChangeHandler = (pageNum: number, pageSize: number) => {
     refetch({
-      params: {
+      page: {
         pageNum,
         pageSize,
       },
@@ -45,7 +44,11 @@ const Org = () => {
   const dataSource = data?.map((item) => ({
     ...item,
     key: item.id,
-    subTitle: <div>{item.tags?.split(',').map((tag) => (<Tag key={tag} color="#5BD8A6">{tag}</Tag>))}</div>,
+    subTitle: <div>{
+      item.tags
+        ? item.tags.split(',').map((tag) => (<Tag key={tag} color="#5BD8A6">{tag}</Tag>))
+        : null
+    }</div>,
     actions: [
       <Button type="link" onClick={() => editInfoHandler(item.id)}>编辑</Button>,
       <Popconfirm
@@ -63,7 +66,7 @@ const Org = () => {
   }));
 
   return (
-    <div className={style.container}>
+    <div >
       <PageContainer
         loading={loading}
         header={{
