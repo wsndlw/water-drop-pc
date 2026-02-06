@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const GET_CARDS = gql`
+export const GET_PRODUCTS = gql`
 query getProducts($page: PageInput!, $name: String){
   getProducts(page: $page, name: $name) {
     code
@@ -11,6 +11,8 @@ query getProducts($page: PageInput!, $name: String){
       desc
       curStock
       stock
+      status
+      type
       buyNum
       limitBuyNum
       coverUrl
@@ -29,7 +31,7 @@ query getProducts($page: PageInput!, $name: String){
   }
 }`;
 
-export const DELETE_CARD = gql`
+export const DELETE_PRODUCT = gql`
 mutation deleteProduct($id:String!){
   deleteProduct(id:$id){
     code
@@ -37,7 +39,7 @@ mutation deleteProduct($id:String!){
   }
 }`
 
-export const COMMIT_CARD = gql`
+export const COMMIT_PRODUCT = gql`
 mutation commitProductInfo($params:ProductInput!,$id:String){
   commitProductInfo(params:$params,id:$id){
       code
@@ -57,6 +59,8 @@ query GetProductInfo($id: String!) {
       curStock
       stock
       buyNum
+      type
+      status
       limitBuyNum
       coverUrl
       bannerUrl
@@ -72,3 +76,15 @@ query GetProductInfo($id: String!) {
   }
 }
 `
+
+export const GET_PRODUCT_TYPES = gql`
+query getProductTypes{
+  getProductTypes{
+    data {
+      key
+      title
+    }
+  }
+}
+`;
+

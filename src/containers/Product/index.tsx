@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import type { ProductType } from '../../graphql/generated';
-import { useDelProduct, useProducts } from '../../services/product';
+import { useDelProduct, useEditProduct, useProducts } from '../../services/product';
 import { getColumns } from './constants';
 import style from './index.module.less';
 import { type ActionType, PageContainer, ProTable } from '@ant-design/pro-components';
@@ -17,7 +17,8 @@ const Product = ({ }) => {
 
   const actionRef = useRef<ActionType>(undefined)
   const { delHandler } = useDelProduct()
-  const { refetch } = useProducts()
+  const { refetch, loading } = useProducts()
+  const { editHandler, loading: editLoading } = useEditProduct()
   const [showEdit, setShowEdit] = useState(false)
   const [curId, setCurId] = useState('')   //存储当前id，即商品id
   const editClickHandler = (id?: string) => {
@@ -27,6 +28,9 @@ const Product = ({ }) => {
     } else {
       setCurId('')
     }
+  }
+  const statusHandler = (id: string, status: string) => {
+    editHandler({ status }, () => actionRef.current?.reload(), id)
   }
   const deleteHandler = (key: any) => {
     delHandler(key, () => actionRef.current?.reload())
@@ -48,11 +52,12 @@ const Product = ({ }) => {
   return (<PageContainer>
     <ProTable<ProductType>
       actionRef={actionRef}
-
+      loading={editLoading || loading}
       columns={getColumns({
         editClickHandler,
         deleteHandler,
-        bindCardHandler
+        bindCardHandler,
+        statusHandler,
       })}
       form={{
         ignoreRules: false

@@ -6,6 +6,8 @@ import { Button, Col, Divider, Drawer, Form, Input, InputNumber, Row, Space } fr
 import TextArea from 'antd/es/input/TextArea';
 import OSSImageUpload from '../../../../components/OSSImageUpload';
 import { useEditProduct, useProductInfo } from '../../../../services/product';
+import TypeSelect from '../TypeSelect';
+import { PRODUCT_STATUS } from '../../../../utils/constants';
 
 interface IProps {
   id?: string,
@@ -24,6 +26,7 @@ const EditProduct = ({ id, onClose }: IProps) => {
       const res = await getProduct(id)
       if (res?.data?.getProductInfo.data) {
         const data = res.data.getProductInfo.data
+        console.log('data', data);
         form.setFieldsValue({
           ...data,
           coverUrl: data.coverUrl ? [{ url: data.coverUrl }] : [],
@@ -32,8 +35,10 @@ const EditProduct = ({ id, onClose }: IProps) => {
       }
     } else {
       form.resetFields()
+      form.setFieldsValue({
+        status: PRODUCT_STATUS.UN_LIST
+      })
     }
-
   }
   useEffect(() => {
     init()
@@ -64,25 +69,38 @@ const EditProduct = ({ id, onClose }: IProps) => {
         <Button type='primary' onClick={submitHandler}>提交</Button>
         <Button>取消</Button>
       </Space>
-
-
       }
     >
       <Form
         form={form}
       >
-        <Form.Item
-          label="商品名称"
-          name="name"
-          rules={[{
-            required: true,
-          }]}
-        >
+        {/* <Form.Item name="status" hidden>
           <Input />
-        </Form.Item>
-
+        </Form.Item> */}
         <Row gutter={20}>
-          <Col>
+          <Col span={18}>
+            <Form.Item
+              label="商品名称"
+              name="name"
+              rules={[{
+                required: true,
+              }]}
+            >
+              <Input />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+              label='课程类别'
+              name='type'
+              rules={[{ required: true }]}
+            >
+              <TypeSelect />
+            </Form.Item>
+          </Col>
+        </Row>
+        <Row gutter={20}>
+          <Col span={6}>
             <Form.Item
               label="库存总额"
               name="stock"
@@ -93,7 +111,7 @@ const EditProduct = ({ id, onClose }: IProps) => {
               <InputNumber min={0} />
             </Form.Item>
           </Col>
-          <Col>
+          <Col span={6}>
             <Form.Item
               label="限购数量"
               name="limitBuyNum"
@@ -105,7 +123,7 @@ const EditProduct = ({ id, onClose }: IProps) => {
             </Form.Item>
           </Col>
 
-          <Col>
+          <Col span={6}>
             <Form.Item
               label="原价"
               name="originPrice"
@@ -116,7 +134,7 @@ const EditProduct = ({ id, onClose }: IProps) => {
               <InputNumber min={0} suffix="元" />
             </Form.Item>
           </Col>
-          <Col>
+          <Col span={6}>
             <Form.Item
               label="优惠价"
               name="preferentialPrice"

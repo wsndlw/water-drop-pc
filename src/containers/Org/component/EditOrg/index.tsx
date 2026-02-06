@@ -30,6 +30,7 @@ const EditOrg = ({ id, onClose }: IProps) => {
         orgRoomImg: values?.orgRoomImg?.map((item: UploadFile) => ({ url: item.url })),
         orgOtherImg: values?.orgOtherImg?.map((item: UploadFile) => ({ url: item.url })),
       } as OrganizationInput;
+      console.log('tags: values.tags.join(', '),', values.tags.join(','),);
       editHandler(id, formData);
     }
   };

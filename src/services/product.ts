@@ -1,8 +1,16 @@
 import { message } from "antd"
-import { useCommitProductInfoMutation, useDeleteProductMutation, useGetProductInfoLazyQuery, useGetProductInfoQuery, useGetProductsQuery, type ProductInput } from "../graphql/generated"
-import { DEFAULT_PAGE_SIZE } from "../utils/constants"
+import { useCommitProductInfoMutation, useDeleteProductMutation, useGetProductInfoLazyQuery, useGetProductInfoQuery, useGetProductsQuery, useGetProductTypesQuery, type ProductInput } from "../graphql/generated"
+import { DEFAULT_PAGE_SIZE, PRODUCT_STATUS } from "../utils/constants"
 
 
+export const useProductTypes = () => {
+  const { data, loading } = useGetProductTypesQuery()
+  console.log('data', data);
+  return {
+    data: data?.getProductTypes.data || [],
+    loading
+  }
+}
 
 export const useEditProduct = () => {
   const [edit, { loading }] = useCommitProductInfoMutation()
@@ -10,7 +18,10 @@ export const useEditProduct = () => {
     const res = await edit({
       variables: {
         id,
-        params: params,
+        params: {
+          ...params,
+          // 如果只是更新状态，其他字段可以不传，后端会进行 Partial Update
+        },
       }
     })
 
@@ -47,8 +58,8 @@ export const useProducts = (pageNum = 1, pageSize = DEFAULT_PAGE_SIZE) => {
       pageSize?: number;
       name?: string;
     },
-    sort:any,
-    filter:any
+    sort: any,
+    filter: any
   ) => {
     // 这里需要返回一个 Promise,在返回之前你可以进行数据转化
     // 如果需要转化参数可以在这里进行修改

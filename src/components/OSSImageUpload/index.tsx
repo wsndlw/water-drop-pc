@@ -49,7 +49,6 @@ const OSSImageUpload: React.FC<Readonly<AliyunOSSUploadProps>> = ({ value, onCha
   // };
 
   const OSSData = data?.getOssInfo;
-  console.log('OSSData', OSSData);
 
   const getKey = (file: UploadFile) => {
     const suffix = file.name.slice(file.name.lastIndexOf('.'));

@@ -19,8 +19,8 @@ const Org = () => {
     setShowEdit(true);
   };
 
-  const delInfoHandler = (id:string) => {
-    delHandler(id,refetch)
+  const delInfoHandler = (id: string) => {
+    delHandler(id, refetch)
   }
   const addInfoHandler = () => {
     setCurId('');
@@ -41,12 +41,13 @@ const Org = () => {
     });
   };
 
+
   const dataSource = data?.map((item) => ({
     ...item,
     key: item.id,
     subTitle: <div>{
       item.tags
-        ? item.tags.split(',').map((tag) => (<Tag key={tag} color="#5BD8A6">{tag}</Tag>))
+        ? item.tags.split(',').map((tag: string) => (<Tag key={tag} color="#5BD8A6">{tag}</Tag>))
         : null
     }</div>,
     actions: [

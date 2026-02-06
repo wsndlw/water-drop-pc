@@ -1,17 +1,20 @@
 import type { ProColumns } from "@ant-design/pro-components"
 import type { ProductType } from "../../graphql/generated"
 import { Button, Space, Image, Popconfirm } from "antd"
+import { PRODUCT_STATUS } from "../../utils/constants"
 
 interface IProps {
   editClickHandler: (id: string) => void,
   deleteHandler: (key: any) => void,
   bindCardHandler: (id: string) => void,
+  statusHandler: (id: string, status: string) => void,
 }
 
 export const getColumns: ({ editClickHandler, deleteHandler, bindCardHandler }: IProps) => ProColumns<ProductType, "text">[] = ({
   editClickHandler,
   deleteHandler,
-  bindCardHandler
+  bindCardHandler,
+  statusHandler,
 }) => {
   return [
     {
@@ -41,14 +44,14 @@ export const getColumns: ({ editClickHandler, deleteHandler, bindCardHandler }: 
       dataIndex: 'originPrice',
       align: 'center',
       search: false,
-      width:  '6vw',
+      width: '6vw',
       valueType: 'number'
     },
     {
       title: '优惠价',
       align: 'center',
       dataIndex: 'preferentialPrice',
-      width:  '6vw',
+      width: '6vw',
       search: false,
       valueType: 'number'
     },
@@ -56,7 +59,7 @@ export const getColumns: ({ editClickHandler, deleteHandler, bindCardHandler }: 
       title: '库存总额',
       align: 'center',
       dataIndex: 'stock',
-      width:  '6vw',
+      width: '6vw',
       search: false,
       valueType: 'number'
     },
@@ -71,7 +74,7 @@ export const getColumns: ({ editClickHandler, deleteHandler, bindCardHandler }: 
     {
       title: '销量',
       align: 'center',
-      width:  '6vw',
+      width: '6vw',
       dataIndex: 'buyNum',
       search: false,
       valueType: 'number'
@@ -85,6 +88,31 @@ export const getColumns: ({ editClickHandler, deleteHandler, bindCardHandler }: 
       valueType: 'option',
       render: (_, record) => (
         <Space>
+          {record.status === PRODUCT_STATUS.UN_LIST ?
+            (<Button
+              style={{ color: 'green' }}
+              key="list"
+              type='link'
+              onClick={() => {
+                if (record.id) {
+                  statusHandler(record.id, PRODUCT_STATUS.LIST)
+                }
+              }}
+            >
+              上架
+            </Button>) :
+            (<Button
+              style={{ color: 'red' }}
+              key="unlist"
+              type='link'
+              onClick={() => {
+                if (record.id) {
+                  statusHandler(record.id, PRODUCT_STATUS.UN_LIST)
+                }
+              }}
+            >
+              下架
+            </Button>)}
           <Button
             key="edit"
             type='link'

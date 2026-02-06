@@ -18,3 +18,8 @@ export const getCardType = (type: string) => {
     default: '-'
   }
 }
+
+export const PRODUCT_STATUS = {
+  LIST: 'LIST',
+  UN_LIST: 'UN_LIST'
+}

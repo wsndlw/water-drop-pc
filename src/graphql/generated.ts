@@ -162,6 +162,10 @@ export type Mutation = {
   getCodeMsg: Result;
   /** 登录 */
   login: Result;
+  /** 学生登录 */
+  studentLogin: Result;
+  /** 学生注册 */
+  studentRegister: Result;
   update: Scalars['Boolean']['output'];
   /** 更新用户 */
   updateUserInfo: Result;
@@ -239,6 +243,18 @@ export type MutationLoginArgs = {
 };
 
 
+export type MutationStudentLoginArgs = {
+  account: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+
+export type MutationStudentRegisterArgs = {
+  account: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
+
 export type MutationUpdateArgs = {
   id: Scalars['String']['input'];
   params: UserInput;
@@ -289,6 +305,8 @@ export type OrganizationInput = {
   businessLicense: Scalars['String']['input'];
   /** description */
   description: Scalars['String']['input'];
+  /** 距离 */
+  distance?: InputMaybe<Scalars['Float']['input']>;
   /** 法人身份证反面 */
   identityCardBackImg?: InputMaybe<Scalars['String']['input']>;
   /** 法人身份证正面 */
@@ -415,8 +433,12 @@ export type ProductInput = {
   originPrice?: InputMaybe<Scalars['Float']['input']>;
   /** 优惠 */
   preferentialPrice?: InputMaybe<Scalars['Float']['input']>;
+  /** 上架状态（默认为下架） */
+  status?: InputMaybe<Scalars['String']['input']>;
   /** 库存总数 */
   stock?: InputMaybe<Scalars['Float']['input']>;
+  /** 分类 */
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ProductResult = {
@@ -451,6 +473,10 @@ export type ProductType = {
   deletedBy?: Maybe<Scalars['String']['output']>;
   /** 描述 */
   desc?: Maybe<Scalars['String']['output']>;
+  /** 距离 */
+  distance?: Maybe<Scalars['Float']['output']>;
+  /** 距离显示文本 */
+  distanceText?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   /** 限购数量 */
   limitBuyNum?: Maybe<Scalars['Float']['output']>;
@@ -461,10 +487,30 @@ export type ProductType = {
   originPrice: Scalars['Float']['output'];
   /** 优惠 */
   preferentialPrice: Scalars['Float']['output'];
+  /** 上架状态（默认为下架） */
+  status: Scalars['String']['output'];
   /** 库存总数 */
   stock?: Maybe<Scalars['Float']['output']>;
+  /** 类型 */
+  type: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type ProductTypeResults = {
+  __typename?: 'ProductTypeResults';
+  code: Scalars['Float']['output'];
+  data?: Maybe<Array<ProductTypeType>>;
+  message: Scalars['String']['output'];
+  page: Page;
+};
+
+export type ProductTypeType = {
+  __typename?: 'ProductTypeType';
+  /** key */
+  key: Scalars['String']['output'];
+  /** 名称 */
+  title: Scalars['String']['output'];
 };
 
 export type Query = {
@@ -484,8 +530,12 @@ export type Query = {
   /** 获取OSS签名 */
   getOssInfo: OssType;
   getProductInfo: ProductResult;
+  /** 获得分类列表，存储在常量文件，不用数据库 */
+  getProductTypes: ProductTypeResults;
   /** 获取商品（按照分页） */
   getProducts: ProductResults;
+  /** 获取商品（按照分页） */
+  getProductsForH5: ProductResults;
   /** 获取学生信息 */
   getStudentInfo: StudentResult;
   /** 获取学生（按照分页） */
@@ -541,6 +591,15 @@ export type QueryGetProductInfoArgs = {
 export type QueryGetProductsArgs = {
   name?: InputMaybe<Scalars['String']['input']>;
   page: PageInput;
+};
+
+
+export type QueryGetProductsForH5Args = {
+  latitude: Scalars['Float']['input'];
+  longitude: Scalars['Float']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+  page: PageInput;
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -744,7 +803,7 @@ export type GetProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetProductsQuery = { __typename?: 'Query', getProducts: { __typename?: 'ProductResults', code: number, message: string, data?: Array<{ __typename?: 'ProductType', id: string, name: string, desc?: string | null, curStock: number, stock?: number | null, buyNum?: number | null, limitBuyNum?: number | null, coverUrl?: string | null, bannerUrl?: string | null, originPrice: number, preferentialPrice: number, createdAt: any, createdBy?: string | null, org?: { __typename?: 'OrganizationType', id: string, name?: string | null } | null }> | null, page: { __typename?: 'Page', total: number, pageNum: number, pageSize: number } } };
+export type GetProductsQuery = { __typename?: 'Query', getProducts: { __typename?: 'ProductResults', code: number, message: string, data?: Array<{ __typename?: 'ProductType', id: string, name: string, desc?: string | null, curStock: number, stock?: number | null, status: string, type: string, buyNum?: number | null, limitBuyNum?: number | null, coverUrl?: string | null, bannerUrl?: string | null, originPrice: number, preferentialPrice: number, createdAt: any, createdBy?: string | null, org?: { __typename?: 'OrganizationType', id: string, name?: string | null } | null }> | null, page: { __typename?: 'Page', total: number, pageNum: number, pageSize: number } } };
 
 export type DeleteProductMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -766,7 +825,12 @@ export type GetProductInfoQueryVariables = Exact<{
 }>;
 
 
-export type GetProductInfoQuery = { __typename?: 'Query', getProductInfo: { __typename?: 'ProductResult', code: number, message: string, data: { __typename?: 'ProductType', id: string, name: string, desc?: string | null, curStock: number, stock?: number | null, buyNum?: number | null, limitBuyNum?: number | null, coverUrl?: string | null, bannerUrl?: string | null, originPrice: number, preferentialPrice: number, createdAt: any, createdBy?: string | null, updatedAt?: any | null, updatedBy?: string | null, org?: { __typename?: 'OrganizationType', id: string } | null, cards?: Array<{ __typename?: 'CardType', id: string, name: string, type: string, time?: number | null, validityDay: number, course?: { __typename?: 'CourseType', name: string } | null }> | null } } };
+export type GetProductInfoQuery = { __typename?: 'Query', getProductInfo: { __typename?: 'ProductResult', code: number, message: string, data: { __typename?: 'ProductType', id: string, name: string, desc?: string | null, curStock: number, stock?: number | null, buyNum?: number | null, type: string, status: string, limitBuyNum?: number | null, coverUrl?: string | null, bannerUrl?: string | null, originPrice: number, preferentialPrice: number, createdAt: any, createdBy?: string | null, updatedAt?: any | null, updatedBy?: string | null, org?: { __typename?: 'OrganizationType', id: string } | null, cards?: Array<{ __typename?: 'CardType', id: string, name: string, type: string, time?: number | null, validityDay: number, course?: { __typename?: 'CourseType', name: string } | null }> | null } } };
+
+export type GetProductTypesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetProductTypesQuery = { __typename?: 'Query', getProductTypes: { __typename?: 'ProductTypeResults', data?: Array<{ __typename?: 'ProductTypeType', key: string, title: string }> | null } };
 
 export type GetUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1433,6 +1497,8 @@ export const GetProductsDocument = gql`
       desc
       curStock
       stock
+      status
+      type
       buyNum
       limitBuyNum
       coverUrl
@@ -1572,6 +1638,8 @@ export const GetProductInfoDocument = gql`
       curStock
       stock
       buyNum
+      type
+      status
       limitBuyNum
       coverUrl
       bannerUrl
@@ -1634,6 +1702,51 @@ export type GetProductInfoQueryHookResult = ReturnType<typeof useGetProductInfoQ
 export type GetProductInfoLazyQueryHookResult = ReturnType<typeof useGetProductInfoLazyQuery>;
 export type GetProductInfoSuspenseQueryHookResult = ReturnType<typeof useGetProductInfoSuspenseQuery>;
 export type GetProductInfoQueryResult = Apollo.QueryResult<GetProductInfoQuery, GetProductInfoQueryVariables>;
+export const GetProductTypesDocument = gql`
+    query getProductTypes {
+  getProductTypes {
+    data {
+      key
+      title
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetProductTypesQuery__
+ *
+ * To run a query within a React component, call `useGetProductTypesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetProductTypesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetProductTypesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetProductTypesQuery(baseOptions?: ApolloReactHooks.QueryHookOptions<GetProductTypesQuery, GetProductTypesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetProductTypesQuery, GetProductTypesQueryVariables>(GetProductTypesDocument, options);
+      }
+export function useGetProductTypesLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetProductTypesQuery, GetProductTypesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetProductTypesQuery, GetProductTypesQueryVariables>(GetProductTypesDocument, options);
+        }
+// @ts-ignore
+export function useGetProductTypesSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<GetProductTypesQuery, GetProductTypesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetProductTypesQuery, GetProductTypesQueryVariables>;
+export function useGetProductTypesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetProductTypesQuery, GetProductTypesQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetProductTypesQuery | undefined, GetProductTypesQueryVariables>;
+export function useGetProductTypesSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetProductTypesQuery, GetProductTypesQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetProductTypesQuery, GetProductTypesQueryVariables>(GetProductTypesDocument, options);
+        }
+export type GetProductTypesQueryHookResult = ReturnType<typeof useGetProductTypesQuery>;
+export type GetProductTypesLazyQueryHookResult = ReturnType<typeof useGetProductTypesLazyQuery>;
+export type GetProductTypesSuspenseQueryHookResult = ReturnType<typeof useGetProductTypesSuspenseQuery>;
+export type GetProductTypesQueryResult = Apollo.QueryResult<GetProductTypesQuery, GetProductTypesQueryVariables>;
 export const GetUserInfoDocument = gql`
     query getUserInfo {
   getUserInfo {
