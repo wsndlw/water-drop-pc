@@ -16,12 +16,17 @@ const Teacher = ({ }) => {
   const [show, setShow] = useState(false)
   const [curId, setCurId] = useState('')
   const [delHandler, delLoading] = useDeleteTeacher()
-  const { teacherLoading, error: teacherError, teacher } = useTeacher()
 
-  const { loading: dataLoading, error: dataError, refetch, data, page } = useTeachers()
+  const { loading: dataLoading, refetch, data, page } = useTeachers()
+  const closeAndRefetchHandler = (load?: boolean) => {
+    setShow(pre => !pre)
+    if (load) {
+      refetch()
+    }
+  }
 
   const onSearchHandler = (name: string) => {
-
+    refetch({ name })
   }
   const editInfoHandler = (id?: string) => {
     if (id) {
@@ -32,22 +37,27 @@ const Teacher = ({ }) => {
     setShow(pre => !pre)
   }
   const onDeleteHandler = (id: string) => {
-
+    delHandler(id, closeAndRefetchHandler)
   }
 
-  const onPageChangeHandler = () => {
+  const onPageChangeHandler = (pageNum: number, pageSize: number) => {
+    refetch({
+      page: {
+        pageNum,
+        pageSize,
+      },
+    });
+  }
 
-  }
-  const closeAndRefetchHandler = () => {
-    setShow(pre => !pre)
-  }
   return (<div className={style.container}>
     <PageContainer
       header={{
         title: '教师管理',
       }}
     >
-      <Card>
+      <Card
+        style={{ height: '90px' }}
+      >
         <Input.Search
           placeholder="请输入教师名字进行搜索"
           className={style.teacherSearch}
@@ -66,7 +76,9 @@ const Teacher = ({ }) => {
       {data?.length === 0 && <Result title="暂无教师数据" />}
       {data?.map((item) => (
         <ProCard
+          loading={dataLoading}
           key={item.id}
+          hoverable
           className={style.card}
           actions={[
             <EditOutlined
@@ -116,6 +128,7 @@ const Teacher = ({ }) => {
         <CreateTeacher
           onClose={closeAndRefetchHandler}
           id={curId}
+          key={curId || 'create'}
         />
       )}
     </PageContainer>

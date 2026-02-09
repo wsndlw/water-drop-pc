@@ -20,9 +20,10 @@ const CreateTeacher = ({ onClose, id }: IProps) => {
 
   const [form] = Form.useForm()
   const { data, loading } = useTeacher(id)
+  console.log('data,id', data, id);
   const [edit, editLoading] = useEditTeacherInfo()
   useEffect(() => {
-    if (data) {
+    if (id && data) {
       const formData = {
         ...data,
         photoUrl: [{ url: data.photoUrl }],
@@ -33,7 +34,7 @@ const CreateTeacher = ({ onClose, id }: IProps) => {
     } else {
       form.resetFields()
     }
-  }, [data])
+  }, [data, form])
 
   const onSubmitHandler = async () => {
     const res = await form.validateFields()
@@ -44,13 +45,12 @@ const CreateTeacher = ({ onClose, id }: IProps) => {
         tags: res.tags.join(',')
       }
       if (id) {
-        edit(formres, onClose, id)
+        edit(formres, () => onClose(true), id)
       } else {
-        edit(formres, onClose)
+        console.log('id', id);
+        edit(formres, () => onClose(true))
       }
     }
-
-
 
   }
   return (
@@ -69,7 +69,7 @@ const CreateTeacher = ({ onClose, id }: IProps) => {
       )}
     >
       <Spin spinning={editLoading || loading}>
-        {(data || !id) && (
+        {(
           <Form
             form={form}
             layout="vertical"

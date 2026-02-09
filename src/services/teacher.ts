@@ -1,12 +1,11 @@
 import { message } from "antd";
-import { useCommitTeacherInfoMutation, useDeleteTeacherMutation, useGetTeacherInfoQuery, useGetTeachersQuery, type TeacherType } from "../graphql/generated";
+import { useCommitTeacherInfoMutation, useDeleteTeacherMutation, useGetTeacherInfoQuery, useGetTeachersQuery, type PageInput, type TeacherType } from "../graphql/generated";
 import { DEFAULT_PAGE_SIZE } from "../utils/constants";
 
 
 export const useTeachers = (
   pageNum = 1,
   pageSize = DEFAULT_PAGE_SIZE,
-  name: string
 ) => {
   const { data, loading, error, refetch } = useGetTeachersQuery({
     variables: {
@@ -14,9 +13,17 @@ export const useTeachers = (
         pageNum,
         pageSize
       },
-      name: name || '',
     }
   })
+  const fetch = (page?: PageInput, name?: string) => {
+    refetch({
+      page: {
+        pageNum,
+        pageSize,
+      },
+      name: name || ''
+    })
+  }
   console.log('data', data);
   return {
     data: data?.getTeachers.data,
@@ -39,13 +46,13 @@ export const useTeacher = (id?: string) => {
       skip: !id,
       variables: {
         id: id || '',
-      },
+      }, fetchPolicy: 'network-only',
     },
   );
   return {
     loading,
     error,
-    data: data?.getTeacherInfo.data,
+    data: id ? data?.getTeacherInfo.data : undefined,
   };
 }
 
