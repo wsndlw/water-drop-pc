@@ -14,6 +14,7 @@ import OrgSelect from '../../components/OrgSelect';
 *Layout组件
 */
 
+//路由部分
 const menuItemRender = (
   item: MenuDataItem,
   dom: React.ReactNode,
@@ -63,8 +64,8 @@ const Layout = () => {
         </Tooltip>,
       ]}
     >
-      <div key = {store.currentOrg}>
-      <Outlet />
+      <div key={store.currentOrg}>
+        <Outlet />
       </div>
     </ProLayout>
   );

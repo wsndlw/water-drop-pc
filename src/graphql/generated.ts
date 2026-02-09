@@ -147,6 +147,7 @@ export type Mutation = {
   /** 创建/更新消费商品 */
   commitProductInfo: ProductResult;
   commitStudentInfo: StudentResult;
+  commitTeacherInfo: TeacherResult;
   create: Scalars['Boolean']['output'];
   createsO: Scalars['String']['output'];
   del: Scalars['Boolean']['output'];
@@ -158,6 +159,8 @@ export type Mutation = {
   deleteOrg: Result;
   /** 删除商品 */
   deleteProduct: Result;
+  /** 删除教师 */
+  deleteTeacher: Result;
   /** 发送验证码 */
   getCodeMsg: Result;
   /** 登录 */
@@ -202,6 +205,12 @@ export type MutationCommitStudentInfoArgs = {
 };
 
 
+export type MutationCommitTeacherInfoArgs = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  params: TeacherInput;
+};
+
+
 export type MutationCreateArgs = {
   params: UserInput;
 };
@@ -228,6 +237,11 @@ export type MutationDeleteOrgArgs = {
 
 
 export type MutationDeleteProductArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteTeacherArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -468,7 +482,7 @@ export type ProductType = {
   createdAt: Scalars['DateTime']['output'];
   createdBy?: Maybe<Scalars['String']['output']>;
   /** 当前库存 */
-  curStock: Scalars['Float']['output'];
+  curStock?: Maybe<Scalars['Float']['output']>;
   deletedAt?: Maybe<Scalars['DateTime']['output']>;
   deletedBy?: Maybe<Scalars['String']['output']>;
   /** 描述 */
@@ -481,18 +495,18 @@ export type ProductType = {
   /** 限购数量 */
   limitBuyNum?: Maybe<Scalars['Float']['output']>;
   /** 名称 */
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   org?: Maybe<OrganizationType>;
   /** 原价 */
-  originPrice: Scalars['Float']['output'];
+  originPrice?: Maybe<Scalars['Float']['output']>;
   /** 优惠 */
-  preferentialPrice: Scalars['Float']['output'];
+  preferentialPrice?: Maybe<Scalars['Float']['output']>;
   /** 上架状态（默认为下架） */
-  status: Scalars['String']['output'];
+  status?: Maybe<Scalars['String']['output']>;
   /** 库存总数 */
   stock?: Maybe<Scalars['Float']['output']>;
   /** 类型 */
-  type: Scalars['String']['output'];
+  type?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
@@ -534,12 +548,18 @@ export type Query = {
   getProductTypes: ProductTypeResults;
   /** 获取商品（按照分页） */
   getProducts: ProductResults;
+  /** 按照机构id获取商品，移动端获取精品课程 */
+  getProductsByOrgIdForH5: ProductResults;
   /** 获取商品（按照分页） */
   getProductsForH5: ProductResults;
   /** 获取学生信息 */
   getStudentInfo: StudentResult;
   /** 获取学生（按照分页） */
   getStudents: StudentResults;
+  /** 获取学生信息 */
+  getTeacherInfo: TeacherResult;
+  /** 获取教师（按照分页） */
+  getTeachers: TeacherResults;
   /** 使用 ID 查询用户 */
   getUserInfo: UserType;
 };
@@ -594,6 +614,11 @@ export type QueryGetProductsArgs = {
 };
 
 
+export type QueryGetProductsByOrgIdForH5Args = {
+  orgId: Scalars['String']['input'];
+};
+
+
 export type QueryGetProductsForH5Args = {
   latitude: Scalars['Float']['input'];
   longitude: Scalars['Float']['input'];
@@ -605,6 +630,17 @@ export type QueryGetProductsForH5Args = {
 
 export type QueryGetStudentsArgs = {
   params: PageInput;
+};
+
+
+export type QueryGetTeacherInfoArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryGetTeachersArgs = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  page?: InputMaybe<PageInput>;
 };
 
 export type ReducibleTimeInput = {
@@ -668,6 +704,59 @@ export type StudentType = {
   name?: Maybe<Scalars['String']['output']>;
   /** 手机号 */
   tel?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedBy?: Maybe<Scalars['String']['output']>;
+};
+
+export type TeacherInput = {
+  /** 教学时间 */
+  education?: InputMaybe<Scalars['String']['input']>;
+  /** 昵称 */
+  name: Scalars['String']['input'];
+  /** 头像 */
+  photoUrl: Scalars['String']['input'];
+  /** 教学时间 */
+  seniority?: InputMaybe<Scalars['String']['input']>;
+  /** 教学时间 */
+  tags?: InputMaybe<Scalars['String']['input']>;
+  /** 教龄 */
+  teacherTime: Scalars['Float']['input'];
+};
+
+export type TeacherResult = {
+  __typename?: 'TeacherResult';
+  code: Scalars['Float']['output'];
+  data: TeacherType;
+  message: Scalars['String']['output'];
+};
+
+export type TeacherResults = {
+  __typename?: 'TeacherResults';
+  code: Scalars['Float']['output'];
+  data?: Maybe<Array<TeacherType>>;
+  message: Scalars['String']['output'];
+  page: Page;
+};
+
+export type TeacherType = {
+  __typename?: 'TeacherType';
+  createdAt: Scalars['DateTime']['output'];
+  createdBy?: Maybe<Scalars['String']['output']>;
+  deletedAt?: Maybe<Scalars['DateTime']['output']>;
+  deletedBy?: Maybe<Scalars['String']['output']>;
+  /** 教学时间 */
+  education?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  /** 昵称 */
+  name: Scalars['String']['output'];
+  /** 头像 */
+  photoUrl: Scalars['String']['output'];
+  /** 教学时间 */
+  seniority?: Maybe<Scalars['String']['output']>;
+  /** 教学时间 */
+  tags?: Maybe<Scalars['String']['output']>;
+  /** 教龄 */
+  teacherTime: Scalars['Float']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   updatedBy?: Maybe<Scalars['String']['output']>;
 };
@@ -803,7 +892,7 @@ export type GetProductsQueryVariables = Exact<{
 }>;
 
 
-export type GetProductsQuery = { __typename?: 'Query', getProducts: { __typename?: 'ProductResults', code: number, message: string, data?: Array<{ __typename?: 'ProductType', id: string, name: string, desc?: string | null, curStock: number, stock?: number | null, status: string, type: string, buyNum?: number | null, limitBuyNum?: number | null, coverUrl?: string | null, bannerUrl?: string | null, originPrice: number, preferentialPrice: number, createdAt: any, createdBy?: string | null, org?: { __typename?: 'OrganizationType', id: string, name?: string | null } | null }> | null, page: { __typename?: 'Page', total: number, pageNum: number, pageSize: number } } };
+export type GetProductsQuery = { __typename?: 'Query', getProducts: { __typename?: 'ProductResults', code: number, message: string, data?: Array<{ __typename?: 'ProductType', id: string, name?: string | null, desc?: string | null, curStock?: number | null, stock?: number | null, status?: string | null, type?: string | null, buyNum?: number | null, limitBuyNum?: number | null, coverUrl?: string | null, bannerUrl?: string | null, originPrice?: number | null, preferentialPrice?: number | null, createdAt: any, createdBy?: string | null, org?: { __typename?: 'OrganizationType', id: string, name?: string | null } | null }> | null, page: { __typename?: 'Page', total: number, pageNum: number, pageSize: number } } };
 
 export type DeleteProductMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -825,12 +914,42 @@ export type GetProductInfoQueryVariables = Exact<{
 }>;
 
 
-export type GetProductInfoQuery = { __typename?: 'Query', getProductInfo: { __typename?: 'ProductResult', code: number, message: string, data: { __typename?: 'ProductType', id: string, name: string, desc?: string | null, curStock: number, stock?: number | null, buyNum?: number | null, type: string, status: string, limitBuyNum?: number | null, coverUrl?: string | null, bannerUrl?: string | null, originPrice: number, preferentialPrice: number, createdAt: any, createdBy?: string | null, updatedAt?: any | null, updatedBy?: string | null, org?: { __typename?: 'OrganizationType', id: string } | null, cards?: Array<{ __typename?: 'CardType', id: string, name: string, type: string, time?: number | null, validityDay: number, course?: { __typename?: 'CourseType', name: string } | null }> | null } } };
+export type GetProductInfoQuery = { __typename?: 'Query', getProductInfo: { __typename?: 'ProductResult', code: number, message: string, data: { __typename?: 'ProductType', id: string, name?: string | null, desc?: string | null, curStock?: number | null, stock?: number | null, buyNum?: number | null, type?: string | null, status?: string | null, limitBuyNum?: number | null, coverUrl?: string | null, bannerUrl?: string | null, originPrice?: number | null, preferentialPrice?: number | null, createdAt: any, createdBy?: string | null, updatedAt?: any | null, updatedBy?: string | null, org?: { __typename?: 'OrganizationType', id: string } | null, cards?: Array<{ __typename?: 'CardType', id: string, name: string, type: string, time?: number | null, validityDay: number, course?: { __typename?: 'CourseType', name: string } | null }> | null } } };
 
 export type GetProductTypesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetProductTypesQuery = { __typename?: 'Query', getProductTypes: { __typename?: 'ProductTypeResults', data?: Array<{ __typename?: 'ProductTypeType', key: string, title: string }> | null } };
+
+export type GetTeachersQueryVariables = Exact<{
+  page: PageInput;
+  name?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type GetTeachersQuery = { __typename?: 'Query', getTeachers: { __typename?: 'TeacherResults', code: number, message: string, page: { __typename?: 'Page', pageNum: number, pageSize: number, total: number }, data?: Array<{ __typename?: 'TeacherType', id: string, name: string, photoUrl: string, teacherTime: number, education?: string | null, seniority?: string | null, tags?: string | null }> | null } };
+
+export type CommitTeacherInfoMutationVariables = Exact<{
+  id?: InputMaybe<Scalars['String']['input']>;
+  params: TeacherInput;
+}>;
+
+
+export type CommitTeacherInfoMutation = { __typename?: 'Mutation', commitTeacherInfo: { __typename?: 'TeacherResult', code: number, message: string } };
+
+export type GetTeacherInfoQueryVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type GetTeacherInfoQuery = { __typename?: 'Query', getTeacherInfo: { __typename?: 'TeacherResult', code: number, message: string, data: { __typename?: 'TeacherType', id: string, name: string, photoUrl: string, teacherTime: number, education?: string | null, seniority?: string | null, tags?: string | null } } };
+
+export type DeleteTeacherMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeleteTeacherMutation = { __typename?: 'Mutation', deleteTeacher: { __typename?: 'Result', code: number, message: string } };
 
 export type GetUserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1747,6 +1866,187 @@ export type GetProductTypesQueryHookResult = ReturnType<typeof useGetProductType
 export type GetProductTypesLazyQueryHookResult = ReturnType<typeof useGetProductTypesLazyQuery>;
 export type GetProductTypesSuspenseQueryHookResult = ReturnType<typeof useGetProductTypesSuspenseQuery>;
 export type GetProductTypesQueryResult = Apollo.QueryResult<GetProductTypesQuery, GetProductTypesQueryVariables>;
+export const GetTeachersDocument = gql`
+    query getTeachers($page: PageInput!, $name: String) {
+  getTeachers(page: $page, name: $name) {
+    code
+    message
+    page {
+      pageNum
+      pageSize
+      total
+    }
+    data {
+      id
+      name
+      photoUrl
+      teacherTime
+      education
+      seniority
+      tags
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTeachersQuery__
+ *
+ * To run a query within a React component, call `useGetTeachersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTeachersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTeachersQuery({
+ *   variables: {
+ *      page: // value for 'page'
+ *      name: // value for 'name'
+ *   },
+ * });
+ */
+export function useGetTeachersQuery(baseOptions: ApolloReactHooks.QueryHookOptions<GetTeachersQuery, GetTeachersQueryVariables> & ({ variables: GetTeachersQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetTeachersQuery, GetTeachersQueryVariables>(GetTeachersDocument, options);
+      }
+export function useGetTeachersLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetTeachersQuery, GetTeachersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetTeachersQuery, GetTeachersQueryVariables>(GetTeachersDocument, options);
+        }
+// @ts-ignore
+export function useGetTeachersSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<GetTeachersQuery, GetTeachersQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetTeachersQuery, GetTeachersQueryVariables>;
+export function useGetTeachersSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetTeachersQuery, GetTeachersQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetTeachersQuery | undefined, GetTeachersQueryVariables>;
+export function useGetTeachersSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetTeachersQuery, GetTeachersQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetTeachersQuery, GetTeachersQueryVariables>(GetTeachersDocument, options);
+        }
+export type GetTeachersQueryHookResult = ReturnType<typeof useGetTeachersQuery>;
+export type GetTeachersLazyQueryHookResult = ReturnType<typeof useGetTeachersLazyQuery>;
+export type GetTeachersSuspenseQueryHookResult = ReturnType<typeof useGetTeachersSuspenseQuery>;
+export type GetTeachersQueryResult = Apollo.QueryResult<GetTeachersQuery, GetTeachersQueryVariables>;
+export const CommitTeacherInfoDocument = gql`
+    mutation commitTeacherInfo($id: String, $params: TeacherInput!) {
+  commitTeacherInfo(id: $id, params: $params) {
+    code
+    message
+  }
+}
+    `;
+export type CommitTeacherInfoMutationFn = Apollo.MutationFunction<CommitTeacherInfoMutation, CommitTeacherInfoMutationVariables>;
+
+/**
+ * __useCommitTeacherInfoMutation__
+ *
+ * To run a mutation, you first call `useCommitTeacherInfoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCommitTeacherInfoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [commitTeacherInfoMutation, { data, loading, error }] = useCommitTeacherInfoMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      params: // value for 'params'
+ *   },
+ * });
+ */
+export function useCommitTeacherInfoMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<CommitTeacherInfoMutation, CommitTeacherInfoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useMutation<CommitTeacherInfoMutation, CommitTeacherInfoMutationVariables>(CommitTeacherInfoDocument, options);
+      }
+export type CommitTeacherInfoMutationHookResult = ReturnType<typeof useCommitTeacherInfoMutation>;
+export type CommitTeacherInfoMutationResult = Apollo.MutationResult<CommitTeacherInfoMutation>;
+export type CommitTeacherInfoMutationOptions = Apollo.BaseMutationOptions<CommitTeacherInfoMutation, CommitTeacherInfoMutationVariables>;
+export const GetTeacherInfoDocument = gql`
+    query getTeacherInfo($id: String!) {
+  getTeacherInfo(id: $id) {
+    code
+    message
+    data {
+      id
+      name
+      photoUrl
+      teacherTime
+      education
+      seniority
+      tags
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTeacherInfoQuery__
+ *
+ * To run a query within a React component, call `useGetTeacherInfoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTeacherInfoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTeacherInfoQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetTeacherInfoQuery(baseOptions: ApolloReactHooks.QueryHookOptions<GetTeacherInfoQuery, GetTeacherInfoQueryVariables> & ({ variables: GetTeacherInfoQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useQuery<GetTeacherInfoQuery, GetTeacherInfoQueryVariables>(GetTeacherInfoDocument, options);
+      }
+export function useGetTeacherInfoLazyQuery(baseOptions?: ApolloReactHooks.LazyQueryHookOptions<GetTeacherInfoQuery, GetTeacherInfoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useLazyQuery<GetTeacherInfoQuery, GetTeacherInfoQueryVariables>(GetTeacherInfoDocument, options);
+        }
+// @ts-ignore
+export function useGetTeacherInfoSuspenseQuery(baseOptions?: ApolloReactHooks.SuspenseQueryHookOptions<GetTeacherInfoQuery, GetTeacherInfoQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetTeacherInfoQuery, GetTeacherInfoQueryVariables>;
+export function useGetTeacherInfoSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetTeacherInfoQuery, GetTeacherInfoQueryVariables>): ApolloReactHooks.UseSuspenseQueryResult<GetTeacherInfoQuery | undefined, GetTeacherInfoQueryVariables>;
+export function useGetTeacherInfoSuspenseQuery(baseOptions?: ApolloReactHooks.SkipToken | ApolloReactHooks.SuspenseQueryHookOptions<GetTeacherInfoQuery, GetTeacherInfoQueryVariables>) {
+          const options = baseOptions === ApolloReactHooks.skipToken ? baseOptions : {...defaultOptions, ...baseOptions}
+          return ApolloReactHooks.useSuspenseQuery<GetTeacherInfoQuery, GetTeacherInfoQueryVariables>(GetTeacherInfoDocument, options);
+        }
+export type GetTeacherInfoQueryHookResult = ReturnType<typeof useGetTeacherInfoQuery>;
+export type GetTeacherInfoLazyQueryHookResult = ReturnType<typeof useGetTeacherInfoLazyQuery>;
+export type GetTeacherInfoSuspenseQueryHookResult = ReturnType<typeof useGetTeacherInfoSuspenseQuery>;
+export type GetTeacherInfoQueryResult = Apollo.QueryResult<GetTeacherInfoQuery, GetTeacherInfoQueryVariables>;
+export const DeleteTeacherDocument = gql`
+    mutation deleteTeacher($id: String!) {
+  deleteTeacher(id: $id) {
+    code
+    message
+  }
+}
+    `;
+export type DeleteTeacherMutationFn = Apollo.MutationFunction<DeleteTeacherMutation, DeleteTeacherMutationVariables>;
+
+/**
+ * __useDeleteTeacherMutation__
+ *
+ * To run a mutation, you first call `useDeleteTeacherMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTeacherMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTeacherMutation, { data, loading, error }] = useDeleteTeacherMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTeacherMutation(baseOptions?: ApolloReactHooks.MutationHookOptions<DeleteTeacherMutation, DeleteTeacherMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return ApolloReactHooks.useMutation<DeleteTeacherMutation, DeleteTeacherMutationVariables>(DeleteTeacherDocument, options);
+      }
+export type DeleteTeacherMutationHookResult = ReturnType<typeof useDeleteTeacherMutation>;
+export type DeleteTeacherMutationResult = Apollo.MutationResult<DeleteTeacherMutation>;
+export type DeleteTeacherMutationOptions = Apollo.BaseMutationOptions<DeleteTeacherMutation, DeleteTeacherMutationVariables>;
 export const GetUserInfoDocument = gql`
     query getUserInfo {
   getUserInfo {
